@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Create New Task</h2>
+    
+    <form method="POST" action="{{ url_for('create_task') }}" class="mt-4">
+        <div class="mb-3">
+            <label for="task_name" class="form-label">Task Name</label>
+            <select class="form-select" id="task_name" name="task_name" required>
+                <option value="">Select a task</option>
+                <option value="Research Paper Review">Research Paper Review</option>
+                <option value="Mentoring Students">Mentoring Students</option>
+                <option value="Conducting Workshops">Conducting Workshops</option>
+                <option value="AI Model Deployment">AI Model Deployment</option>
+                <option value="Curriculum Development">Curriculum Development</option>
+                <option value="Data Annotation">Data Annotation</option>
+                <option value="Lab In-charge">Lab In-charge</option>
+                <option value="Class Advisor">Class Advisor</option>
+                <option value="Placement Coordinator">Placement Coordinator</option>
+                <option value="Event Coordinator">Event Coordinator</option>
+                <option value="Exam Coordinator">Exam Coordinator</option>
+                <option value="Project Guide">Project Guide</option>
+                <option value="Research Coordinator">Research Coordinator</option>
+                <option value="Industry Liaison">Industry Liaison</option>
+                <option value="Faculty Development Coordinator">Faculty Development Coordinator</option>
+                <option value="Student Activity Coordinator">Student Activity Coordinator</option>
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label for="faculty_id" class="form-label">Assign to Faculty</label>
+            <select class="form-select" id="faculty_id" name="faculty_id" required>
+                <option value="">Select a faculty member</option>
+                {% for faculty in faculty %}
+                <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label for="due_date" class="form-label">Due Date</label>
+            <input type="date" class="form-control" id="due_date" name="due_date" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="priority" class="form-label">Priority</label>
+            <select class="form-select" id="priority" name="priority" required>
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Create Task</button>
+            <a href="{{ url_for('task_allocation') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %} 

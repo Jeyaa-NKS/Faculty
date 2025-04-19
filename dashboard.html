@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #2b6777;
+        --secondary: #52ab98;
+        --light-bg: #c8d8e4;
+        --white: #ffffff;
+        --gray-bg: #f2f2f2;
+    }
+
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-card {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: var(--white);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .leave-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: var(--white);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .leave-table th {
+        background-color: var(--primary);
+        color: var(--white);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 500;
+    }
+
+    .leave-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--gray-bg);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        text-align: center;
+        display: inline-block;
+        min-width: 100px;
+    }
+
+    .status-pending {
+        background-color: #ffd93d;
+        color: #000;
+    }
+
+    .status-approved {
+        background-color: var(--secondary);
+        color: var(--white);
+    }
+
+    .status-rejected {
+        background-color: #ff6b6b;
+        color: var(--white);
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="dashboard-card">
+        <div class="welcome-section">
+            <h2>Welcome, {{ current_user.name }}!</h2>
+            <p>Role: {{ current_user.role|title }}</p>
+        </div>
+
+        {% if current_user.role == 'faculty' %}
+        <div style="margin-bottom: 2rem;">
+            <a href="{{ url_for('apply_leave') }}" class="btn" style="background-color: var(--primary); color: white; padding: 0.75rem 1.5rem; border-radius: 4px; text-decoration: none;">Apply for Leave</a>
+        </div>
+        {% endif %}
+
+        <div>
+            <h3 style="color: var(--primary); margin-bottom: 1rem;">Your Tasks</h3>
+            {% if current_user.tasks %}
+                <table class="leave-table">
+                    <thead>
+                        <tr>
+                            <th>Task Name</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in current_user.tasks %}
+                        <tr>
+                            <td>{{ task.task_name }}</td>
+                            <td>
+                                <span class="status-badge {% if task.status == 'completed' %}status-approved{% else %}status-pending{% endif %}">
+                                    {{ task.status|title }}
+                                </span>
+                            </td>
+                            <td>{{ task.due_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ task.priority|title }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="color: var(--primary);">No tasks assigned.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h3 style="color: var(--primary); margin-bottom: 1rem;">Leave Requests</h3>
+        {% if leaves %}
+            <table class="leave-table">
+                <thead>
+                    <tr>
+                        {% if current_user.role == 'admin' %}
+                        <th>Faculty</th>
+                        {% endif %}
+                        <th>Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in leaves %}
+                    <tr>
+                        {% if current_user.role == 'admin' %}
+                        <td>{{ leave.user.name }}</td>
+                        {% endif %}
+                        <td>{{ leave.leave_type }}</td>
+                        <td>{{ leave.start_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ leave.end_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ leave.reason }}</td>
+                        <td>
+                            <span class="status-badge {% if leave.status == 'approved' %}status-approved{% elif leave.status == 'rejected' %}status-rejected{% else %}status-pending{% endif %}">
+                                {{ leave.status|title }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="color: var(--primary);">No leave requests found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

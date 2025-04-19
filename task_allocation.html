@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Task Allocation</h2>
+    
+    {% if current_user.role == 'admin' %}
+    <div class="mb-4">
+        <a href="{{ url_for('create_task') }}" class="btn btn-primary">Create New Task</a>
+        <form method="POST" action="{{ url_for('task_allocation') }}" class="d-inline-block ms-3">
+            <button type="submit" class="btn btn-success">Run Q-Learning Allocation</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Faculty</th>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Due Date</th>
+                    {% if current_user.role == 'admin' %}
+                    <th>Actions</th>
+                    {% else %}
+                    <th>Update Status</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.user.name }}</td>
+                    <td>{{ task.task_name }}</td>
+                    <td>
+                        <span class="badge {% if task.status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">
+                            {{ task.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge {% if task.priority == 'high' %}bg-danger{% elif task.priority == 'medium' %}bg-warning{% else %}bg-info{% endif %}">
+                            {{ task.priority }}
+                        </span>
+                    </td>
+                    <td>{{ task.due_date.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        {% if current_user.role == 'admin' %}
+                        <a href="#" class="btn btn-sm btn-info">Edit</a>
+                        <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                        {% else %}
+                        <form method="POST" action="{{ url_for('update_task_status', task_id=task.id) }}" class="d-inline">
+                            <select name="status" class="form-select form-select-sm d-inline-block w-auto">
+                                <option value="pending" {% if task.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="completed" {% if task.status == 'completed' %}selected{% endif %}>Completed</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

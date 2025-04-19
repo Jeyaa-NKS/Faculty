@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 2rem auto;">
+    <h2 style="color: var(--primary); margin-bottom: 2rem; text-align: center;">Apply for Leave</h2>
+    
+    <form method="POST" action="{{ url_for('apply_leave') }}" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+            <label for="start_date" style="color: var(--primary); display: block; margin-bottom: 0.5rem;">Start Date</label>
+            <input type="date" id="start_date" name="start_date" required 
+                   style="width: 100%; padding: 0.5rem; border: 1px solid var(--light-bg); border-radius: 4px;">
+        </div>
+
+        <div>
+            <label for="end_date" style="color: var(--primary); display: block; margin-bottom: 0.5rem;">End Date</label>
+            <input type="date" id="end_date" name="end_date" required 
+                   style="width: 100%; padding: 0.5rem; border: 1px solid var(--light-bg); border-radius: 4px;">
+        </div>
+
+        <div>
+            <label for="leave_type" style="color: var(--primary); display: block; margin-bottom: 0.5rem;">Leave Type</label>
+            <select id="leave_type" name="leave_type" required 
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--light-bg); border-radius: 4px;">
+                <option value="">Select Leave Type</option>
+                <option value="casual">Casual Leave</option>
+                <option value="sick">Sick Leave</option>
+                <option value="vacation">Vacation Leave</option>
+                <option value="personal">Personal Leave</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="reason" style="color: var(--primary); display: block; margin-bottom: 0.5rem;">Reason</label>
+            <textarea id="reason" name="reason" required 
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--light-bg); border-radius: 4px; min-height: 100px;"></textarea>
+        </div>
+
+        <button type="submit" class="btn" style="margin-top: 1rem;">Submit Leave Request</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startDate = document.getElementById('start_date');
+        const endDate = document.getElementById('end_date');
+
+        // Set minimum date as today for both inputs
+        const today = new Date().toISOString().split('T')[0];
+        startDate.min = today;
+        endDate.min = today;
+
+        // Update end date minimum when start date changes
+        startDate.addEventListener('change', function() {
+            endDate.min = this.value;
+            if (endDate.value && endDate.value < this.value) {
+                endDate.value = this.value;
+            }
+        });
+    });
+</script>
+{% endblock %}

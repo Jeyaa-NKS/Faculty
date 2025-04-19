@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h1 style="color: var(--primary); margin-bottom: 2rem;">Welcome to Faculty Leave Management System</h1>
+    
+    <div style="margin-bottom: 2rem;">
+        <p style="color: var(--primary); font-size: 1.1rem; line-height: 1.6;">
+            This system allows faculty members to:
+        </p>
+        <ul style="color: var(--secondary); line-height: 1.8;">
+            <li>Submit leave requests easily</li>
+            <li>Track leave application status</li>
+            <li>View leave history</li>
+            <li>Manage their leave balance</li>
+        </ul>
+    </div>
+
+    {% if not current_user.is_authenticated %}
+    <div style="display: flex; gap: 1rem;">
+        <a href="{{ url_for('login') }}" class="btn" style="background-color: var(--primary);">Login</a>
+        <a href="{{ url_for('register') }}" class="btn">Register</a>
+    </div>
+    {% else %}
+    <div>
+        <a href="{{ url_for('dashboard') }}" class="btn" style="background-color: var(--primary);">Go to Dashboard</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
